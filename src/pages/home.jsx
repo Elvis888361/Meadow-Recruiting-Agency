@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import {
   Card,
   CardBody,
@@ -13,8 +13,46 @@ import { UsersIcon } from "@heroicons/react/24/solid";
 import { PageTitle, Footer } from "@/widgets/layout";
 import { FeatureCard, TeamCard } from "@/widgets/cards";
 import { featuresData, teamData, contactData } from "@/data";
+import axios from "axios";
 
 export function Home() {
+  const [fullName, setFullName] = useState("");
+  const [email, setEmail] = useState("");
+  const [message, setMessage] = useState("");
+  const [formValues, setFormValues] = useState({
+    fullName: "",
+    email: "",
+    message: "",
+  });
+
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+    setFormValues((prevFormValues) => ({
+      ...prevFormValues,
+      [name]: value,
+    }));
+  };
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+
+    try {
+      console.log("Form Values:", formValues);
+
+      const response = await axios.post("http://147.182.195.64:3001/", formValues);
+      console.log("Email sent successfully!", response.data);
+
+      // Reset the form after successful submission
+      setFormValues({
+        fullName: "",
+        email: "",
+        message: "",
+      });
+    } catch (error) {
+      console.log("Failed to send email", error);
+    }
+  };
+
   return (
     <>
       <div className="relative flex h-screen content-center items-center justify-center pb-32 pt-16">
@@ -234,16 +272,11 @@ export function Home() {
                   />
                 </svg>
               </div>
-              <Typography
-                variant="h5"
-                color="blue-gray"
-                className="mb-2"
-              >
-                HEALTH CARE HOUSE KEEPING <br /> FRONT OFFICE <br/>PLANT OPERATORS
+              <Typography variant="h5" color="blue-gray" className="mb-2">
+                HEALTH CARE HOUSE KEEPING <br /> FRONT OFFICE <br />
+                PLANT OPERATORS
               </Typography>
-              <Typography className="font-normal text-blue-gray-500">
-                
-              </Typography>
+              <Typography className="font-normal text-blue-gray-500"></Typography>
             </Card>
             <Card
               color="transparent"
@@ -265,20 +298,14 @@ export function Home() {
                   />
                 </svg>
               </div>
-              <Typography
-                variant="h5"
-                color="blue-gray"
-                className="mb-2"
-              >
+              <Typography variant="h5" color="blue-gray" className="mb-2">
                 IT PROFESSIONALS
                 <br />
                 SUPPLY CHAIN
                 <br />
                 MARKETING AND SALES
               </Typography>
-              <Typography className="font-normal text-blue-gray-500">
-                
-              </Typography>
+              <Typography className="font-normal text-blue-gray-500"></Typography>
             </Card>
             <Card
               color="transparent"
@@ -300,32 +327,53 @@ export function Home() {
                   />
                 </svg>
               </div>
-              <Typography
-                variant="h5"
-                color="blue-gray"
-                className="mb-2"
-              >
+              <Typography variant="h5" color="blue-gray" className="mb-2">
                 SECURITY GUARDS
                 <br />
                 HOUSE KEEPERS
                 <br />
                 LABOURERS
               </Typography>
-              <Typography className="font-normal text-blue-gray-500">
-                
-              </Typography>
+              <Typography className="font-normal text-blue-gray-500"></Typography>
             </Card>
           </div>
           <PageTitle heading="Want to work with us?">
             Complete this form and we will get back to you in 24 hours.
           </PageTitle>
-          <form className="mx-auto mt-12 max-w-3xl text-center">
+          <form
+            className="mx-auto mt-12 max-w-3xl text-center"
+            onSubmit={handleSubmit}
+          >
             <div className="mb-8 flex gap-8">
-              <Input variant="standard" size="lg" label="Full Name" />
-              <Input variant="standard" size="lg" label="Email Address" />
+              <Input
+                variant="standard"
+                size="lg"
+                type="text"
+                name="fullName"
+                value={formValues.fullName}
+                onChange={handleChange}
+                label="Full Name"
+              />
+              <Input
+                variant="standard"
+                size="lg"
+                type="email"
+                name="email"
+                value={formValues.email}
+                onChange={handleChange}
+                label="Email Address"
+              />
             </div>
-            <Textarea variant="standard" size="lg" label="Message" rows={8} />
-            <Button variant="gradient" size="lg" className="mt-8">
+            <Textarea
+              variant="standard"
+              size="lg"
+              value={formValues.message}
+              name="message"
+              onChange={handleChange}
+              label="Message"
+              rows={8}
+            />
+            <Button variant="gradient" type="submit" size="lg" className="mt-8">
               Send Message
             </Button>
           </form>
